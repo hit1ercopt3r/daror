@@ -9,4 +9,19 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Daror::Application.config.secret_key_base = 'bdadbf153b6b3f5325a2e2fe677a9a5cf435e9c6a4451fdb02dd9420bb115b4e001a097124206e6533e048b28c05b9ac7d7d24bf43e15b1cae3ca1db41c02b09'
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+SampleApp::Application.config.secret_key_base = secure_token
